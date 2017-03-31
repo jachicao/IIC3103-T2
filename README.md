@@ -27,3 +27,4 @@ rails g scaffold User usuario:string nombre:string apellido:string twitter:strin
 resources :usuario, controller: 'usuarios'
 validates :usuario, presence: true
 validates :nombre, presence: true
+heroku config:set SECRET_KEY_BASE='secret'
