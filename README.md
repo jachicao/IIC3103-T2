@@ -22,3 +22,8 @@ Things you may want to cover:
 * Deployment instructions
 
 * ...
+
+rails g scaffold User usuario:string nombre:string apellido:string twitter:string
+resources :usuario, controller: 'usuarios'
+validates :usuario, presence: true
+validates :nombre, presence: true
