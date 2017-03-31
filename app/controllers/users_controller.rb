@@ -34,10 +34,11 @@ class UsersController < ApplicationController
     if user_params.count > 1
       render :json => { :error => "La modificación ha fallado" }, status: :internal_server_error
     else
-      if params[:id]
+      body = JSON.parse(request.body.read);
+      if user_params[:id] or body[:id]
         render :json => { :error => "id no es modificable" }, status: :bad_request
       else
-        if @user.update(user_params)
+        if @user.update(body)
           render json: @user, :except => [:created_at, :updated_at]
         else
           render :json => { :error => "La actualización ha fallado" }, status: :internal_server_error
