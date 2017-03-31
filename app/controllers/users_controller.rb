@@ -7,10 +7,7 @@ class UsersController < ApplicationController
   # GET /users
   def index
     @users = User.all
-    render :json => {
-      usuarios: @users,
-      total: @users.size
-    }
+    render :json => { usuarios: @users, total: @users.size }
   end
 
   # GET /users/1
@@ -20,24 +17,31 @@ class UsersController < ApplicationController
 
   # POST /users
   def create
-    @user = User.new(create_params)
-    if @user.save
-      render json: @user, :except => [:created_at, :updated_at], status: :created, location: @user
+    if params[:id]
+      render :json => { :error => "No se puede crear usuario con id" }, status: :bad_request
     else
-      render :json => { :error => "La creación ha fallado" }, status: :internal_server_error
+      @user = User.new(user_params)
+      if @user.save
+        render json: @user, :except => [:created_at, :updated_at], status: :created, location: @user
+      else
+        render :json => { :error => "La creación ha fallado" }, status: :internal_server_error
+      end
     end
   end
 
   # PATCH/PUT /users/1
   def update
-    puts params[:nombre]
-    if false
-      render :json => { :error => "id no es modificable" }, status: :bad_request
+    if user_params.count > 1
+      render :json => { :error => "La modificación ha fallado" }, status: :internal_server_error
     else
-      if @user.update(update_params)
-        render json: @user, :except => [:created_at, :updated_at]
+      if params[:id]
+        render :json => { :error => "id no es modificable" }, status: :bad_request
       else
-        render :json => { :error => "La actualización ha fallado" }, status: :internal_server_error
+        if @user.update(user_params)
+          render json: @user, :except => [:created_at, :updated_at]
+        else
+          render :json => { :error => "La actualización ha fallado" }, status: :internal_server_error
+        end
       end
     end
   end
@@ -50,17 +54,12 @@ class UsersController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_user
-      @user = User.find(params[:id])
+      @user = User.find(params[:user_id])
     end
 
     # Only allow a trusted parameter "white list" through.
-    def create_params
-      params.require(:user).permit(:id, :usuario, :nombre, :apellido, :twitter)
-    end
-
-    # Only allow a trusted parameter "white list" through.
-    def update_params
-      params.fetch(:user, {}).permit(:usuario, :nombre, :apellido, :twitter)
+    def user_params
+      params.fetch(:user, {}).permit(:id, :usuario, :nombre, :apellido, :twitter)
     end
 
     def render_unprocessable_entity_response(exception)
