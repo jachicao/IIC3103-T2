@@ -18,5 +18,3 @@ ADD Gemfile /myapp/Gemfile
 ADD Gemfile.lock /myapp/Gemfile.lock
 RUN bundle install --jobs 20 --retry 5
 ADD . /myapp
-
-RUN bundle exec rake assets:precompile
